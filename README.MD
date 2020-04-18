@@ -1,0 +1,2 @@
+# Introduction
+The system is designed to stimulate a travel broker and market place.  Any service providers (airline, accommodation) can self-register their service to a market place as agent reacting to planning request by customer and offering deals to travellers. Travellers doesn’t need to browse on different providers to search for options suit their needs, the MAMS broker can coordinate different provider’s agents to satisfy their plan all in one single place.
