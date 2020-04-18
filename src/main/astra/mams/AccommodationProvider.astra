@@ -1,0 +1,10 @@
+package mams;
+
+agent AccommodationProvider {
+    module Console console;
+    module System system;
+
+    rule +!main(list args) {
+        console.println("Hello World, "+system.name());
+    }
+}

@@ -1,0 +1,12 @@
+package mams;
+
+agent TravelBroker {
+    module Console console;
+    module System system;
+
+    // Intialize
+    rule +!main(list args) {
+        console.println("Starting");
+    }
+
+}
