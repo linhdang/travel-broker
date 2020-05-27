@@ -1,12 +1,19 @@
 package mams;
 
-agent TravelBroker {
+agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe {
     module Console console;
     module System system;
 
-    // Intialize
-    rule +!main(list args) {
-        console.println("Starting");
+    initial !init();
+
+     rule +!init() {
+        MAMSAgent::!init();
+        MAMSAgent::!created("base");
+
+        // create endpoint for registering providers http://localhos:9000/travel-broker/providers
+        PassiveMAMSAgent::!listResource("providers", "mams.Provider");
+         // create endpoint for registering plans http://localhos:9000/travel-broker/plans
+        PassiveMAMSAgent::!listResource("plans", "mams.Plan");
     }
 
 }

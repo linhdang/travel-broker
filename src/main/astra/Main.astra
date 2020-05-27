@@ -1,7 +1,7 @@
 agent Main extends mams.MAMSAgent {
     module System system;
     module Console console;
-    
+
 	rule +!main(list args) {
 		MAMSAgent::!setup();
 
@@ -9,4 +9,5 @@ agent Main extends mams.MAMSAgent {
 
         system.sleep(500);
     }
+
 }
