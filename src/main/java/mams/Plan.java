@@ -20,7 +20,7 @@ public class Plan {
     public Date from;
      // Flight and accomodation start Date, assume both are the same
     public Date to;
-    // accomodationtype ONE_BED, TWO_BEND, FULL_HOUSE, should be an enum but we can optimize later
+    // accomodationtype ONE_BED, TWO_BED, FULL_HOUSE, should be an enum but we can optimize later
     public String accomodationType;
     
 }

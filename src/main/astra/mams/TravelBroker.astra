@@ -6,7 +6,7 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
 
     initial !init();
 
-     rule +!init() {
+    rule +!init() {
         MAMSAgent::!init();
         MAMSAgent::!created("base");
 
@@ -14,6 +14,14 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         PassiveMAMSAgent::!listResource("providers", "mams.Provider");
          // create endpoint for registering plans http://localhos:9000/travel-broker/plans
         PassiveMAMSAgent::!listResource("plans", "mams.Plan");
+    }
+
+    rule +!register_provider() {
+
+    }
+
+    rule +!register_planner() {
+        
     }
 
 }

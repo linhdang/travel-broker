@@ -1,0 +1,4 @@
+package mams;
+
+agent Provider extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe {
+}
