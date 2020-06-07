@@ -1,0 +1,261 @@
+{
+	"info": {
+		"_postman_id": "cd615d01-6cb5-414e-afc6-3a9a7d195a1f",
+		"name": "AgentOP",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Register flight provider",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"disabled": false
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"type\":\"FLIGHT\",\n\"name\": \"Ryanair\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9000/travel-broker/providers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"travel-broker",
+						"providers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register planner Travel A",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"disabled": true,
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"disabled": false,
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"name\": \"Travel_A\",\n\"chosenFlightProviders\": [\"Ryanair\", \"AerLingus\",\"Flybee\"],\n\"chosenAccommodationProviders\": [\"Sheraton\", \"Carlton\"]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9000/travel-broker/planners",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"travel-broker",
+						"planners"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register accomodation provider",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"disabled": true,
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"disabled": false,
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"type\":\"ACCOMMODATION\",\n\"name\": \"Sheraton\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9000/travel-broker/providers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"travel-broker",
+						"providers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Service register available flight plans from provider",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"type\":\"FLIGHT\",\n\"from\": \"2012-04-23T18:25:43.511Z\", \n\"to\": \"2012-04-23T18:25:43.511Z\", \n\"departure\": \"Dublin\",\n\"arrival\": \"London\",\n\"capacity\": 100,\n\"price\": 50,\n\"name\": \"Ryanair\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.0.52:9000/Ryanair/plans",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"0",
+						"52"
+					],
+					"port": "9000",
+					"path": [
+						"Ryanair",
+						"plans"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Service register available accomodation plans from provider",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"type\":\"ACCOMMODATION\",\n\"from\": \"2012-04-23T18:25:43.511Z\", \n\"to\": \"2012-04-23T18:25:43.511Z\", \n\"arrival\": \"London\",\n\"capacity\": 100,\n\"accomodationType\": \"ONE_BED\",\n\"price\": 50,\n\"name\": \"Sheraton\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.0.52:9000/Sheraton/plans",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"0",
+						"52"
+					],
+					"port": "9000",
+					"path": [
+						"Sheraton",
+						"plans"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List all available plans per agent",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://192.168.0.52:9000/Ryanair/plans",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"0",
+						"52"
+					],
+					"port": "9000",
+					"path": [
+						"Ryanair",
+						"plans"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get plan for submitted customer-1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://192.168.0.52:9000/Travel_A/plans/Customer-1",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"0",
+						"52"
+					],
+					"port": "9000",
+					"path": [
+						"Travel_A",
+						"plans",
+						"Customer-1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request a plan for customer-1",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"from\": \"2012-04-23T18:25:43.511Z\", \n\"to\": \"2012-04-23T18:25:43.511Z\", \n\"departure\": \"Dublin\",\n\"arrival\": \"London\",\n\"accomodationType\": \"ONE_BED\",\n\"name\": \"Customer-1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.0.52:9000/Travel_A/plans",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"0",
+						"52"
+					],
+					"port": "9000",
+					"path": [
+						"Travel_A",
+						"plans"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
