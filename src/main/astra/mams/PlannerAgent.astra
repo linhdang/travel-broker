@@ -1,6 +1,7 @@
 package mams;
 
 // each Planner will be registered via TravelBroker
+// Planner presents a Travel Agency registering with the market place
 agent PlannerAgent extends mams.ActiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe {
 
     initial !init();
