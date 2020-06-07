@@ -5,7 +5,7 @@ package mams;
 agent PlannerAgent extends mams.ActiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe {
     module System system;
     module Console console;
-    
+
     initial !init();
 
     rule +!init() {
@@ -17,7 +17,16 @@ agent PlannerAgent extends mams.ActiveMAMSAgent, astra.protocol.FipaRequest, ast
           // create endpoint for registering plans http://localhos:9000/travel-broker/plans
         PassiveMAMSAgent::!listResource("plans", "mams.Plan");
     }
-    rule +!plan() {
-        
+
+   // add the request plan, look for provider
+    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string provider_name, "mams.Plan")) {
+        // handle Provider registration
+        string name = source_artifact_name+"-"+provider_name;
+        cartago.lookupArtifact(name, cartago.ArtifactId id);
+        cartago.focus(id);
+
+        // Record info about the artifact
+        +artifact(provider_name, name, id);
+       
     }
 }

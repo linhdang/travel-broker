@@ -19,7 +19,15 @@ agent ProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, a
 
     }
 
-    rule +!provide() {
+    // add the available service, and trigger negotiation
+    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string provider_name,  "mams.AvailablePlan")) {
+        // handle Provider registration
+        string name = source_artifact_name+"-"+provider_name;
+        cartago.lookupArtifact(name, cartago.ArtifactId id);
+        cartago.focus(id);
 
+        // Record info about the artifact
+        +artifact(provider_name, name, id);
+       
     }
 }
