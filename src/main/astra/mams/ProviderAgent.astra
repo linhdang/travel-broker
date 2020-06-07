@@ -13,7 +13,7 @@ agent ProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, a
         MAMSAgent::!init();
         MAMSAgent::!created("base");
         
-        console.println("Setting up test list resource");
+        console.println("Setting up available plans under the providers");
           // create endpoint for registering plans http://localhos:9000/travel-broker/plans
         PassiveMAMSAgent::!listResource("plans", "mams.AvailablePlan");
 
