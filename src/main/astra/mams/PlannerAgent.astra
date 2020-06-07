@@ -1,0 +1,24 @@
+package mams;
+
+// each Planner will be registered via TravelBroker
+agent PlannerAgent extends mams.ActiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe {
+
+    initial !init();
+
+    rule +!init() {
+
+        MAMSAgent::!init();
+        MAMSAgent::!created("base");
+
+         // system.trace(true);
+        MAMSAgent::!init();
+        MAMSAgent::!created("base");
+        
+        console.println("Setting up test list resource");
+          // create endpoint for registering plans http://localhos:9000/travel-broker/plans
+        PassiveMAMSAgent::!listResource("plans", "mams.Plan");
+    }
+    rule +!plan() {
+        
+    }
+}

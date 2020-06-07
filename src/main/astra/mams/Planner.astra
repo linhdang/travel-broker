@@ -1,5 +1,0 @@
-package mams;
-
-// each Planner will be registered via TravelBroker
-agent Planner extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe {
-}

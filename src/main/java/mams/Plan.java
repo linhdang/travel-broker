@@ -13,9 +13,9 @@ public class Plan {
     public String name;
 
     // Destination for toursim
-    public String destination;
+    public String departure;
     // Location when the flight start
-    public String location;
+    public String arrival;
     // Flight and accomodation start Date, assume both are the same
     public Date from;
      // Flight and accomodation start Date, assume both are the same

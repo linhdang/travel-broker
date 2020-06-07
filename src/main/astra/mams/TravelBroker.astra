@@ -11,17 +11,43 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         MAMSAgent::!created("base");
 
         // create endpoint for registering providers http://localhos:9000/travel-broker/providers
-        PassiveMAMSAgent::!listResource("providers", "mams.Provider");
+        PassiveMAMSAgent::!listResource("providers", "mams.ProviderRegistration");
          // create endpoint for registering plans http://localhos:9000/travel-broker/plans
-        PassiveMAMSAgent::!listResource("plans", "mams.Plan");
+        PassiveMAMSAgent::!listResource("planners", "mams.PlannerRegistration");
     }
 
-    rule +!register_provider() {
-
+    // handle POST  http://localhos:9000/travel-broker/providers and register Provider with provided name and ID
+    rule +!register_provider(string provider_name) {
+        system.createAgent(provider_name, "mams.ProviderAgent");
     }
 
-    rule +!register_planner() {
-        
+    // handle POST  http://localhos:9000/travel-broker/plans and register Plan and generate and ID
+    rule +!register_planner(string provider_name) {
+        system.createAgent(provider_name, "mams.PlannerAgent");
+    }
+
+    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string provider_name,  "mams.ProviderRegistration")) {
+        // handle Provider registration
+        string name = source_artifact_name+"-"+provider_name;
+        cartago.lookupArtifact(name, cartago.ArtifactId id);
+        cartago.focus(id);
+
+        // Record info about the artifact
+        +artifact(provider_name, name, id);
+       
+        !register_provider(provider_name);
+    }
+
+    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string provider_name,  "mams.PlannerRegistration")) {
+        // handle Provider registration
+        string name = source_artifact_name+"-"+provider_name;
+        cartago.lookupArtifact(name, cartago.ArtifactId id);
+        cartago.focus(id);
+
+        // Record info about the artifact
+        +artifact(provider_name, name, id);
+       
+        !register_provider(provider_name);
     }
 
 }
