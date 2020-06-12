@@ -8,14 +8,23 @@ agent ProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, a
 
     initial !init();
 
+    // //http://astralanguage.com/wordpress/multi-agent-communication-with-astra/
+    // inference interest(string type) :- itemResource(type, "mams.Plan");
+
     rule +!init() {
         // system.trace(true);
         MAMSAgent::!init();
         MAMSAgent::!created("base");
         
         console.println("Setting up available plans under the providers");
-          // create endpoint for registering plans http://localhos:9000/travel-broker/plans
+        // create endpoint for registering plans http://localhos:9000/travel-broker/plans
         PassiveMAMSAgent::!listResource("plans", "mams.AvailablePlan");
+
+        // subscribe for any new plans submitted
+        FipaSubscribe::!!subscribe(S.getOwner(), "new_plan");
+
+        //monitor fifa?
+        !monitor_action_requests();
 
     }
 

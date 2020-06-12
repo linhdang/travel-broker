@@ -1,0 +1,15 @@
+package mams;
+
+agent TravelAgent {
+    module System system;
+    module Console console;
+    
+    types plan_request {
+        formula location(string);
+        formula departure(string);
+        formula from(date);
+        formula to(date);
+        formula ref(date);
+    }
+
+}

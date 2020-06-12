@@ -6,6 +6,17 @@ agent PlannerAgent extends mams.ActiveMAMSAgent, astra.protocol.FipaRequest, ast
     module System system;
     module Console console;
 
+
+    types plan_request {
+        formula created(string, string);
+        formula available(string, string);
+        formula attend(string);
+        formula auction(string);
+        formula auction(string, funct);
+        formula auction(string,funct,int);
+        formula bid(string, int);
+    }
+
     initial !init();
 
     rule +!init() {
@@ -16,6 +27,7 @@ agent PlannerAgent extends mams.ActiveMAMSAgent, astra.protocol.FipaRequest, ast
         console.println("Setting up plans list resource under each planner");
           // create endpoint for registering plans http://localhos:9000/travel-broker/plans
         PassiveMAMSAgent::!listResource("plans", "mams.Plan");
+        !monitor_action_requests();
     }
 
    // add the request plan, look for provider
@@ -27,6 +39,20 @@ agent PlannerAgent extends mams.ActiveMAMSAgent, astra.protocol.FipaRequest, ast
 
         // Record info about the artifact
         +artifact(provider_name, name, id);
-       
+        !itemProperty(provider_name, "location", funct location);
+        !itemProperty(provider_name, "departure", funct departure);
+        !itemProperty(provider_name, "from", funct from);
+        !itemProperty(provider_name, "to", funct to);
+
+        // ask for Provider submit the plans
+        !publish("new_plan", plan_request(location));
+
+        // wait for all provider receive notification plan
+        system.sleep(2000); // really 2s???
+        
+        // ask for all available plans
+        !request_action(name, start_collecting_interest(location, departure, from, to));
+
     }
+
 }
