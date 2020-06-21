@@ -2,57 +2,68 @@ package mams;
 
 // each Planner will be registered via TravelBroker
 // Planner presents a Travel Agency registering with the market place
-agent PlannerAgent extends mams.ActiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe {
+agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe{
     module System system;
     module Console console;
 
-
-    types plan_request {
-        formula created(string, string);
-        formula available(string, string);
-        formula attend(string);
-        formula auction(string);
-        formula auction(string, funct);
-        formula auction(string,funct,int);
-        formula bid(string, int);
-    }
-
+    
     initial !init();
 
-    rule +!init() {
+     // initialize channel to send message to, would be a topic per se
 
+    initial channel("plan_request");
+    initial !monitor_action_requests(), !monitor_subscriptions();
+
+    types plan_request {
+        formula plan_request_action(string, string); // new plan request for departure, location, accomodation provider + flight provider
+    }
+
+    rule +!init() {
         MAMSAgent::!init();
         MAMSAgent::!created("base");
-        
+        system.trace(true);
         console.println("Setting up plans list resource under each planner");
-          // create endpoint for registering plans http://localhos:9000/travel-broker/plans
+
+        // create endpoint for registering plans http://localhos:9000/travel-broker/plans
+
         PassiveMAMSAgent::!listResource("plans", "mams.Plan");
-        !monitor_action_requests();
+        FipaSubscribe::!!subscribe(S.getOwner(), "plan_request");
     }
 
    // add the request plan, look for provider
-    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string provider_name, "mams.Plan")) {
+    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string planner_name, "mams.Plan")) {
         // handle Provider registration
-        string name = source_artifact_name+"-"+provider_name;
+        string name = source_artifact_name+"-"+planner_name;
         cartago.lookupArtifact(name, cartago.ArtifactId id);
         cartago.focus(id);
 
         // Record info about the artifact
-        +artifact(provider_name, name, id);
-        !itemProperty(provider_name, "location", funct location);
-        !itemProperty(provider_name, "departure", funct departure);
-        !itemProperty(provider_name, "from", funct from);
-        !itemProperty(provider_name, "to", funct to);
+        
+        +artifact(planner_name, name, id);
+
+        // copy the vaule from property of the submitted mams.Plan to a variable
+
+        !itemProperty(planner_name, "arrival", funct arrival);
+        !itemProperty(planner_name, "departure", funct departure);
+        !itemProperty(planner_name, "from", funct from);
+        !itemProperty(planner_name, "to", funct to);
+        !itemProperty(planner_name, "accomodationType", funct accomodationType);
 
         // ask for Provider submit the plans
-        !publish("new_plan", plan_request(location));
+        console.println("Send plan request with= arrival: ["+arrival+", departure ["+ departure +"], from ["+from+"], to: ["+to+"], accomodationType ["+accomodationType+"]");
+        // !publish("plan_request", plan_request_action(departure, arrival));
 
         // wait for all provider receive notification plan
         system.sleep(2000); // really 2s???
         
         // ask for all available plans
-        !request_action(name, start_collecting_interest(location, departure, from, to));
+        // !request_action(name, start_collecting_interest(arrival, departure, from, to));
+         !request_action("Travel_A", plan_request_action(departure, arrival));
 
+    }
+
+    rule +!handle_content("plan_request", plan_request_action(string departure, string arrival)) {
+        console.println("alerted to new auction: " + departure + " held by: " + arrival);
     }
 
 }

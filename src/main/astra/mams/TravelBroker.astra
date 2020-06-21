@@ -4,7 +4,9 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
     module Console console;
     module System system;
 
-    initial !init();
+    initial !init(); 
+    initial !monitor_action_requests(), !monitor_subscriptions();
+    initial channel("plan_request");
 
     rule +!init() {
         MAMSAgent::!init();
@@ -47,7 +49,7 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         // Record info about the artifact
         +artifact(provider_name, name, id);
        
-        !register_provider(provider_name);
+        !register_planner(provider_name);
     }
 
 }

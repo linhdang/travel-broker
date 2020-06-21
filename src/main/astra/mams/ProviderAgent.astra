@@ -1,13 +1,13 @@
 package mams;
 
 // each provider will be registered via TravelBroker
-agent ProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe {
+agent ProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe, mams.TravelAgent {
 
     module System system;
     module Console console;
 
     initial !init();
-
+    initial !monitor_action_requests(), !monitor_subscriptions();
     // //http://astralanguage.com/wordpress/multi-agent-communication-with-astra/
     // inference interest(string type) :- itemResource(type, "mams.Plan");
 
@@ -21,10 +21,7 @@ agent ProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, a
         PassiveMAMSAgent::!listResource("plans", "mams.AvailablePlan");
 
         // subscribe for any new plans submitted
-        FipaSubscribe::!!subscribe(S.getOwner(), "new_plan");
-
-        //monitor fifa?
-        !monitor_action_requests();
+        FipaSubscribe::!!subscribe(S.getOwner(), "plan_request");
 
     }
 
@@ -39,4 +36,9 @@ agent ProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, a
         +artifact(provider_name, name, id);
        
     }
+
+    //  rule +!handle_content("plan_request", plan_request(string departure, string arrival)) {
+    //     console.println("alerted to new auction: " + departure + " held by: " + arrival);
+    // }
+
 }
