@@ -18,9 +18,8 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         system.trace(true);
         console.println("Setting up plans list resource under each planner");
 
-        // create endpoint for registering plans http://localhos:9000/travel-broker/plans
-
-        PassiveMAMSAgent::!listResource("plans", "mams.Plan");
+        // create endpoint for registering plans http://localhos:9000/travel-broker/plan
+        
         FipaSubscribe::!!subscribe(S.getOwner(), "plan_request");
     }
 
@@ -58,8 +57,12 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
 
     }
 
-       rule +!handle_content("plan_request", plan_request_action(string departure, string arrival)) {
-        console.println("alerted to new auction: " + departure + " held by: " + arrival);
+    rule +!handle_content("plan_request", plan_request_action(funct departure, funct arrival)) {
+        console.println("new plan request: " + departure + " held by: " + arrival);
     }
+
+    // rule +!handle_content("plan_request", plan_request_action(string departure, string arrival, string accomodationType, long from, long to, string plannerId )) {
+    //     console.println("new plan request: " + departure + " held by: " + arrival);
+    // }
 
 }

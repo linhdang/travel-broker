@@ -5,7 +5,10 @@ agent TravelAgent {
     module Console console;
     
     types plan_request {
-        formula plan_request_action(string, string); // new plan request for departure, location, accomodation provider + flight provider
+        // departure, arrival, accomodationType, from, to, plannerId
+
+        // formula plan_request_action(string, string, string, long, long, string);
+        formula plan_request_action(string, string);
     }
     
     rule +!init() {

@@ -55,7 +55,7 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         !register_planner(provider_name);
     }
 
-     rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string provider_name,  "mams.PlanRequest")) {
+    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string provider_name,  "mams.PlanRequest")) {
         // handle Provider registration
         string name = source_artifact_name+"-"+provider_name;
         cartago.lookupArtifact(name, cartago.ArtifactId id);
@@ -64,7 +64,15 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         // Record info about the artifact
         +artifact(provider_name, name, id);
 
-        !publish("plan_request", plan_request_action("ho", "he"));
+        !itemProperty(provider_name, "arrival", funct arrival);
+        !itemProperty(provider_name, "departure", funct departure);
+        !itemProperty(provider_name, "from", funct from);
+        !itemProperty(provider_name, "to", funct to);
+        !itemProperty(provider_name, "accomodationType", funct accomodationType);
+        !itemProperty(provider_name, "plannerId", funct plannerId);
+
+ // departure, arrival, accomodationType, from, to, plannerId
+        !publish("plan_request", plan_request_action(departure, arrival));
 
         // return location to /Travel_A/plans/id
     }

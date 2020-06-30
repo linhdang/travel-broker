@@ -40,8 +40,8 @@ agent ProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, a
        
     }
 
-     rule +!handle_content("plan_request", plan_request_action(string departure, string arrival)) {
-        console.println("alerted to new auction: " + departure + " held by: " + arrival);
+    rule +!handle_content("plan_request", plan_request_action(string departure, string arrival, string accomodationType, long from, long to, string plannerId )) {
+        console.println("new plan request: " + departure + " held by: " + arrival);
     }
 
 }

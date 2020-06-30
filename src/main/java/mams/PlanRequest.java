@@ -16,10 +16,10 @@ public class PlanRequest {
     public String departure;
     // Location when the flight start
     public String arrival;
-    // Flight and accomodation start Date, assume both are the same
-    public Date from;
-     // Flight and accomodation start Date, assume both are the same
-    public Date to;
+    // Flight and accomodation start Date in epoch format
+    public Long from;
+     // Flight and accomodation end Date in epoch format
+    public Long to;
     // accomodationtype ONE_BED, TWO_BED, FULL_HOUSE, should be an enum but we can optimize later
     public String accomodationType;
     
