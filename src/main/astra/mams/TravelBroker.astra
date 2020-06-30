@@ -1,6 +1,6 @@
 package mams;
 
-agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe {
+agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe ,mams.TravelAgent {
     module Console console;
     module System system;
 
@@ -16,6 +16,9 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         PassiveMAMSAgent::!listResource("providers", "mams.ProviderRegistration");
          // create endpoint for registering plans http://localhos:9000/travel-broker/plans
         PassiveMAMSAgent::!listResource("planners", "mams.PlannerRegistration");
+
+        // create endpoint for requesting plan
+        PassiveMAMSAgent::!listResource("plans", "mams.PlanRequest");
     }
 
     // handle POST  http://localhos:9000/travel-broker/providers and register Provider with provided name and ID
@@ -50,6 +53,20 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         +artifact(provider_name, name, id);
        
         !register_planner(provider_name);
+    }
+
+     rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string provider_name,  "mams.PlanRequest")) {
+        // handle Provider registration
+        string name = source_artifact_name+"-"+provider_name;
+        cartago.lookupArtifact(name, cartago.ArtifactId id);
+        cartago.focus(id);
+
+        // Record info about the artifact
+        +artifact(provider_name, name, id);
+
+        !publish("plan_request", plan_request_action("ho", "he"));
+
+        // return location to /Travel_A/plans/id
     }
 
 }

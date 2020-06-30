@@ -2,7 +2,7 @@ package mams;
 
 // each Planner will be registered via TravelBroker
 // Planner presents a Travel Agency registering with the market place
-agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe{
+agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe, mams.TravelAgent{
     module System system;
     module Console console;
 
@@ -10,13 +10,7 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
     initial !init();
 
      // initialize channel to send message to, would be a topic per se
-
-    initial channel("plan_request");
     initial !monitor_action_requests(), !monitor_subscriptions();
-
-    types plan_request {
-        formula plan_request_action(string, string); // new plan request for departure, location, accomodation provider + flight provider
-    }
 
     rule +!init() {
         MAMSAgent::!init();
@@ -49,20 +43,22 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         !itemProperty(planner_name, "to", funct to);
         !itemProperty(planner_name, "accomodationType", funct accomodationType);
 
+        system.sleep(20000); // really 2s???
+
         // ask for Provider submit the plans
         console.println("Send plan request with= arrival: ["+arrival+", departure ["+ departure +"], from ["+from+"], to: ["+to+"], accomodationType ["+accomodationType+"]");
-        // !publish("plan_request", plan_request_action(departure, arrival));
+       
 
         // wait for all provider receive notification plan
-        system.sleep(2000); // really 2s???
+       
         
         // ask for all available plans
         // !request_action(name, start_collecting_interest(arrival, departure, from, to));
-         !request_action("Travel_A", plan_request_action(departure, arrival));
+         //!request_action("Travel_A", plan_request_action(departure, arrival));
 
     }
 
-    rule +!handle_content("plan_request", plan_request_action(string departure, string arrival)) {
+       rule +!handle_content("plan_request", plan_request_action(string departure, string arrival)) {
         console.println("alerted to new auction: " + departure + " held by: " + arrival);
     }
 

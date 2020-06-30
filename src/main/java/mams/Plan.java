@@ -3,24 +3,24 @@ import java.util.Date;
 
 import mams.utils.Identifier;
 
-/**
- * A planning session with User
- * User express interest on flights from Date - to Date in a location, and accomodation type (1 bed, 2 bed, full appartment)
- */
+// A generic provider, can provide either provide FLIGHT or ACCOMODATIon
+
+// a flight provider will use the following fields
+// (type=FLIGHT, from:Date, departure:String, arrival:String, price: Double, capcaity:int) 
+// an accomodation will use following fields
+// (type=ACCOMMODATION, from:Date, to:Date, arrival:String, price: Double, capacity:int) 
 public class Plan {
+    // FLIGHT or ACCOMMODATION
+    public String type;
+    public Date from;
+    public Date to;
+    public String departure;
+    public String arrival;
+    public int capacity;
+    public long price;
+    public String accomodationType;
 
     @Identifier
     public String name;
-
-    // Destination for toursim
-    public String departure;
-    // Location when the flight start
-    public String arrival;
-    // Flight and accomodation start Date, assume both are the same
-    public Date from;
-     // Flight and accomodation start Date, assume both are the same
-    public Date to;
-    // accomodationtype ONE_BED, TWO_BED, FULL_HOUSE, should be an enum but we can optimize later
-    public String accomodationType;
     
 }
