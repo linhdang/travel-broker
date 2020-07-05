@@ -3,6 +3,7 @@ package mams;
 agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe ,mams.TravelAgent {
     module Console console;
     module System system;
+    module Functions F;
 
     initial !init(); 
     initial !monitor_action_requests(), !monitor_subscriptions();
@@ -63,16 +64,16 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
 
         // Record info about the artifact
         +artifact(provider_name, name, id);
-
         !itemProperty(provider_name, "arrival", funct arrival);
-        !itemProperty(provider_name, "departure", funct departure);
+        !itemProperty(provider_name, "departure", funct departure );
         !itemProperty(provider_name, "from", funct from);
         !itemProperty(provider_name, "to", funct to);
         !itemProperty(provider_name, "accomodationType", funct accomodationType);
         !itemProperty(provider_name, "plannerId", funct plannerId);
 
  // departure, arrival, accomodationType, from, to, plannerId
-        !publish("plan_request", plan_request_action(departure, arrival));
+        !publish("plan_request", plan_request_action(F.valueAsString(arrival, 0), F.valueAsString(departure, 0),
+         F.valueAsLong(from, 0), F.valueAsLong(to, 0), F.valueAsString(accomodationType, 0), F.valueAsString(plannerId, 0)));
 
         // return location to /Travel_A/plans/id
     }

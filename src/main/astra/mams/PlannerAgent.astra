@@ -36,33 +36,21 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
 
         // copy the vaule from property of the submitted mams.Plan to a variable
 
-        !itemProperty(planner_name, "arrival", funct arrival);
-        !itemProperty(planner_name, "departure", funct departure);
-        !itemProperty(planner_name, "from", funct from);
-        !itemProperty(planner_name, "to", funct to);
-        !itemProperty(planner_name, "accomodationType", funct accomodationType);
-
-        system.sleep(20000); // really 2s???
-
-        // ask for Provider submit the plans
-        console.println("Send plan request with= arrival: ["+arrival+", departure ["+ departure +"], from ["+from+"], to: ["+to+"], accomodationType ["+accomodationType+"]");
+        // !itemProperty(planner_name, "arrival", funct arrival);
+        cartago.operation(planner_name, getStringProperty("arrival", string arrival));
+        cartago.operation(planner_name, getStringProperty("departure", string departure));
        
+        // !itemProperty(planner_name, "departure", funct departure);
+        // !itemProperty(planner_name, "from", funct from);
+        // !itemProperty(planner_name, "to", funct to);
+        // !itemProperty(planner_name, "accomodationType", funct accomodationType);
 
-        // wait for all provider receive notification plan
-       
-        
-        // ask for all available plans
-        // !request_action(name, start_collecting_interest(arrival, departure, from, to));
-         //!request_action("Travel_A", plan_request_action(departure, arrival));
+        system.sleep(20000); // really 2s???;
 
     }
 
-    rule +!handle_content("plan_request", plan_request_action(funct departure, funct arrival)) {
+    rule +!handle_content("plan_request", plan_request_action(string departure, string arrival, string accomodationType, long from, long to, string plannerId )) {
         console.println("new plan request: " + departure + " held by: " + arrival);
     }
-
-    // rule +!handle_content("plan_request", plan_request_action(string departure, string arrival, string accomodationType, long from, long to, string plannerId )) {
-    //     console.println("new plan request: " + departure + " held by: " + arrival);
-    // }
 
 }
