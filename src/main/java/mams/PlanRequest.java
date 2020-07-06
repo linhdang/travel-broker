@@ -26,14 +26,4 @@ public class PlanRequest {
     
     // planner id that the plan want to request available plan from
     public String plannerId;
-
-    @OPERATION
-    Long getFrom() {
-        return from;
-    }
-
-    @OPERATION
-    Long getTo() {
-        return to;
-    }
 }

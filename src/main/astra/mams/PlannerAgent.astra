@@ -17,40 +17,32 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         MAMSAgent::!created("base");
         system.trace(true);
         console.println("Setting up plans list resource under each planner");
-
-        // create endpoint for registering plans http://localhos:9000/travel-broker/plan
         
-        FipaSubscribe::!!subscribe(S.getOwner(), "plan_request");
+        // create endpoint for requesting plan
+
+        PassiveMAMSAgent::!listResource("plans", "mams.Plan");
     }
 
    // add the request plan, look for provider
-    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string planner_name, "mams.Plan")) {
+    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string plan_name, "mams.Plan")) {
         // handle Provider registration
-        string name = source_artifact_name+"-"+planner_name;
+        string name = source_artifact_name+"-"+plan_name;
         cartago.lookupArtifact(name, cartago.ArtifactId id);
         cartago.focus(id);
 
         // Record info about the artifact
         
-        +artifact(planner_name, name, id);
-
-        // copy the vaule from property of the submitted mams.Plan to a variable
-
-        // !itemProperty(planner_name, "arrival", funct arrival);
-        cartago.operation(planner_name, getStringProperty("arrival", string arrival));
-        cartago.operation(planner_name, getStringProperty("departure", string departure));
-       
-        // !itemProperty(planner_name, "departure", funct departure);
-        // !itemProperty(planner_name, "from", funct from);
-        // !itemProperty(planner_name, "to", funct to);
-        // !itemProperty(planner_name, "accomodationType", funct accomodationType);
-
-        system.sleep(20000); // really 2s???;
-
+        +artifact(plan_name, name, id);
     }
 
-    rule +!handle_content("plan_request", plan_request_action(string departure, string arrival, string accomodationType, long from, long to, string plannerId )) {
-        console.println("new plan request: " + departure + " held by: " + arrival);
+
+    rule +!evaluate_request(string name, accommodation(string location, string accomodationType, long from, long to), boolean res) {
+        res = true;
+        console.println("Received a proposal for accommodation");
     }
 
+    rule +!evaluate_request(string name, flight(string departure, string arrival, long from, long to), boolean res) {
+        res = true;
+        console.println("Received a proposal for flight");
+    }
 }

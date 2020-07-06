@@ -1,15 +1,18 @@
 package mams;
 
 // each provider will be registered via TravelBroker
-agent ProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe, mams.TravelAgent {
+agent AccommodationProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe, mams.TravelAgent {
 
     module System system;
     module Console console;
+    module Functions F;
 
     initial !init();
     initial !monitor_action_requests(), !monitor_subscriptions();
-    // //http://astralanguage.com/wordpress/multi-agent-communication-with-astra/
-    // inference interest(string type) :- itemResource(type, "mams.Plan");
+
+    types eg {
+        formula available_accommodation(string, string, long, long);
+    }
 
     rule +!init() {
         // system.trace(true);
@@ -37,11 +40,30 @@ agent ProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, a
 
         // Record info about the artifact
         +artifact(provider_name, name, id);
+        !itemProperty(provider_name, "arrival", funct arrival);
+        !itemProperty(provider_name, "accommodationType", funct accommodationType );
+        !itemProperty(provider_name, "from", funct from);
+        !itemProperty(provider_name, "to", funct to);
+        // record belief on available plan
+        +available_accommodation(F.valueAsString(arrival, 0), F.valueAsString(accommodationType, 0), F.valueAsLong(from, 0), F.valueAsLong(to, 0));
        
     }
 
     rule +!handle_content("plan_request", plan_request_action(string departure, string arrival, string accomodationType, long from, long to, string plannerId )) {
+          
         console.println("new plan request: " + departure + " held by: " + arrival);
-    }
+        
+        // send proposed plan to based on what they have
 
+        foreach(available_accommodation(string available_location, string available_accomodationType, long available_from, long available_to)) {
+            if (available_location == arrival & available_accomodationType == accomodationType & available_from == from & available_to == to) {
+                // 
+                console.println("found a plan matched request, send back to planner");
+                //found available_plan
+
+                !request_action(plannerId, accommodation(available_location, available_accomodationType, available_from, available_to));
+            }
+        }
+      
+    }
 }

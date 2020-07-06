@@ -71,11 +71,22 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         !itemProperty(provider_name, "accomodationType", funct accomodationType);
         !itemProperty(provider_name, "plannerId", funct plannerId);
 
- // departure, arrival, accomodationType, from, to, plannerId
+        // call post to create plan resource on planner
+
+        string jsonPlan =  "{\n" +
+                "\"from\": "+F.valueAsLong(from, 0)+", \n" +
+                "\"to\": "+ F.valueAsLong(to, 0) +", \n" +
+                "\"departure\": \""+ F.valueAsString(departure, 0)+"\",\n" +
+                "\"arrival\": \""+ F.valueAsString(arrival, 0)+"\",\n" +
+                "\"accomodationType\": \""+ F.valueAsString(accomodationType, 0) + "\",\n" +
+                "\"name\": \""+provider_name+"\"\n" +
+                "}";
+        MAMSAgent::!post("http://localhost:9000/" + F.valueAsString(plannerId, 0)+"/plans/", jsonPlan, int code, string content);
+        if (code ~= 200) S.fail();
+
+        // departure, arrival, accomodationType, from, to, plannerId and uri for submitting proposals
         !publish("plan_request", plan_request_action(F.valueAsString(arrival, 0), F.valueAsString(departure, 0),
          F.valueAsLong(from, 0), F.valueAsLong(to, 0), F.valueAsString(accomodationType, 0), F.valueAsString(plannerId, 0)));
-
-        // return location to /Travel_A/plans/id
     }
 
 }

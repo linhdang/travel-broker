@@ -1,0 +1,71 @@
+package mams;
+
+// each provider will be registered via TravelBroker
+agent FlightProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe, mams.TravelAgent {
+
+    module System system;
+    module Console console;
+    module Functions F;
+
+    initial !init();
+    initial !monitor_action_requests(), !monitor_subscriptions();
+    // //http://astralanguage.com/wordpress/multi-agent-communication-with-astra/
+    // inference interest(string type) :- itemResource(type, "mams.Plan");
+
+    types eg {
+        formula available_flight(string, string, long, long);
+    }
+
+    rule +!init() {
+        // system.trace(true);
+        MAMSAgent::!init();
+        MAMSAgent::!created("base");
+        system.trace(true);
+        console.println("Setting up available plans under the providers");
+        // create endpoint for registering plans http://localhos:9000/travel-broker/plans
+        PassiveMAMSAgent::!listResource("plans", "mams.AvailablePlan");
+
+        // subscribe for any new plans submitted
+
+        // subscribe to a infrastructure agent given the name
+        // S.getOwner return the agent orginating the current agent
+        FipaSubscribe::!!subscribe(S.getOwner(), "plan_request");
+
+    }
+
+    // add the available service, and trigger negotiation
+    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string provider_name,  "mams.AvailablePlan")) {
+        // handle Provider registration
+        string name = source_artifact_name+"-"+provider_name;
+        cartago.lookupArtifact(name, cartago.ArtifactId id);
+        cartago.focus(id);
+
+        // Record info about the artifact
+        +artifact(provider_name, name, id);
+        !itemProperty(provider_name, "arrival", funct arrival);
+        !itemProperty(provider_name, "departure", funct departure);
+        !itemProperty(provider_name, "from", funct from);
+        !itemProperty(provider_name, "to", funct to);
+        // record belief on available plan
+        +available_flight(F.valueAsString(departure, 0), F.valueAsString(arrival, 0), F.valueAsLong(from, 0), F.valueAsLong(to, 0));
+       
+    }
+
+    rule +!handle_content("plan_request", plan_request_action(string departure, string arrival, string accomodationType, long from, long to, string plannerId )) {
+          
+        console.println("new plan request: " + departure + " held by: " + arrival);
+        
+        // send proposed plan to based on what they have
+
+        foreach(available_flight(string available_departure, string available_arrival, long available_from, long available_to)) {
+            if (available_departure == departure & available_arrival == arrival & available_from == from & available_to == to) {
+                // 
+                console.println("found a plan matched request, send back to planner");
+                //found available_plan
+
+                !request_action(plannerId, flight(available_departure, available_arrival, available_from, available_to));
+            }
+        }
+      
+    }
+}
