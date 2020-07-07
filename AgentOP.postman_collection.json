@@ -42,38 +42,6 @@
 			"response": []
 		},
 		{
-			"name": "Request a plan for customer-1",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\"from\": \"2012-04-23T18:25:43.511Z\", \n\"to\": \"2012-04-23T18:25:43.511Z\", \n\"departure\": \"Dublin\",\n\"arrival\": \"London\",\n\"accomodationType\": \"ONE_BED\",\n\"name\": \"Customer-1\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://192.168.0.52:9000/Travel_A/plans",
-					"protocol": "http",
-					"host": [
-						"192",
-						"168",
-						"0",
-						"52"
-					],
-					"port": "9000",
-					"path": [
-						"Travel_A",
-						"plans"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Register flight provider",
 			"request": {
 				"method": "POST",
@@ -152,7 +120,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"type\":\"FLIGHT\",\n\"from\": \"2012-04-23T18:25:43.511Z\", \n\"to\": \"2012-04-23T18:25:43.511Z\", \n\"departure\": \"Dublin\",\n\"arrival\": \"London\",\n\"capacity\": 100,\n\"price\": 50,\n\"name\": \"Ryanair\"\n}",
+					"raw": "{\n\"from\": 123, \n\"to\": 124, \n\"departure\": \"Dublin\",\n\"arrival\": \"London\",\n\"capacity\": 100,\n\"price\": 50,\n\"name\": \"Ryanair\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -184,7 +152,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"type\":\"ACCOMMODATION\",\n\"from\": \"2012-04-23T18:25:43.511Z\", \n\"to\": \"2012-04-23T18:25:43.511Z\", \n\"arrival\": \"London\",\n\"capacity\": 100,\n\"accomodationType\": \"ONE_BED\",\n\"price\": 50,\n\"name\": \"Sheraton\"\n}",
+					"raw": "{\n\"from\": 123, \n\"to\": 124, \n\"arrival\": \"London\",\n\"capacity\": 100,\n\"accommodationType\": \"ONE_BED\",\n\"price\": 50,\n\"name\": \"Sheraton\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -203,6 +171,38 @@
 					"port": "9000",
 					"path": [
 						"Sheraton",
+						"plans"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request a plan for customer-1",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"from\": 123123, \n\"to\": 1231233213, \n\"departure\": \"Dublin\",\n\"arrival\": \"London\",\n\"accomodationType\": \"ONE_BED\",\n\"name\": \"Customer-3\",\n\"plannerId\": \"Travel_A\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.0.52:9000/travel-broker/plans",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"0",
+						"52"
+					],
+					"port": "9000",
+					"path": [
+						"travel-broker",
 						"plans"
 					]
 				}
