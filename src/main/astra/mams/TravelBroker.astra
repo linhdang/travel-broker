@@ -23,8 +23,13 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
     }
 
     // handle POST  http://localhos:9000/travel-broker/providers and register Provider with provided name and ID
-    rule +!register_provider(string provider_name) {
-        system.createAgent(provider_name, "mams.ProviderAgent");
+
+    rule +!register_provider(string provider_name,  "FLIGHT") {
+        system.createAgent(provider_name, "mams.FlightProviderAgent");
+    }
+
+    rule +!register_provider(string provider_name, "ACCOMMODATION") {
+        system.createAgent(provider_name, "mams.AccommodationProviderAgent");
     }
 
     // handle POST  http://localhos:9000/travel-broker/plans and register Plan and generate and ID
@@ -40,8 +45,8 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
 
         // Record info about the artifact
         +artifact(provider_name, name, id);
-       
-        !register_provider(provider_name);
+        !itemProperty(provider_name, "type", funct type);
+        !register_provider(provider_name, F.valueAsString(type, 0));
     }
 
     rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string provider_name,  "mams.PlannerRegistration")) {
@@ -71,18 +76,18 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         !itemProperty(provider_name, "accomodationType", funct accomodationType);
         !itemProperty(provider_name, "plannerId", funct plannerId);
 
-        // call post to create plan resource on planner
+        // // call post to create plan resource on planner
 
-        string jsonPlan =  "{\n" +
-                "\"from\": "+F.valueAsLong(from, 0)+", \n" +
-                "\"to\": "+ F.valueAsLong(to, 0) +", \n" +
-                "\"departure\": \""+ F.valueAsString(departure, 0)+"\",\n" +
-                "\"arrival\": \""+ F.valueAsString(arrival, 0)+"\",\n" +
-                "\"accomodationType\": \""+ F.valueAsString(accomodationType, 0) + "\",\n" +
-                "\"name\": \""+provider_name+"\"\n" +
-                "}";
-        MAMSAgent::!post("http://localhost:9000/" + F.valueAsString(plannerId, 0)+"/plans/", jsonPlan, int code, string content);
-        if (code ~= 200) S.fail();
+        // string jsonPlan =  "{\n" +
+        //         "\"from\": "+F.valueAsLong(from, 0)+", \n" +
+        //         "\"to\": "+ F.valueAsLong(to, 0) +", \n" +
+        //         "\"departure\": \""+ F.valueAsString(departure, 0)+"\",\n" +
+        //         "\"arrival\": \""+ F.valueAsString(arrival, 0)+"\",\n" +
+        //         "\"accomodationType\": \""+ F.valueAsString(accomodationType, 0) + "\",\n" +
+        //         "\"name\": \""+provider_name+"\"\n" +
+        //         "}";
+        // MAMSAgent::!post("http://localhost:9000/" + F.valueAsString(plannerId, 0)+"/plans/", jsonPlan, int code, string content);
+        // if (code ~= 200) S.fail();
 
         // departure, arrival, accomodationType, from, to, plannerId and uri for submitting proposals
         !publish("plan_request", plan_request_action(F.valueAsString(arrival, 0), F.valueAsString(departure, 0),

@@ -9,16 +9,13 @@ import mams.utils.Identifier;
 // (type=FLIGHT, from:Date, departure:String, arrival:String, price: Double, capcaity:int) 
 // an accomodation will use following fields
 // (type=ACCOMMODATION, from:Date, to:Date, arrival:String, price: Double, capacity:int) 
-public class Plan {
-    // FLIGHT or ACCOMMODATION
-    public String type;
-    public Date from;
-    public Date to;
+public class FlightPlan {
+    public Long from;
+    public Long to;
     public String departure;
     public String arrival;
     public int capacity;
     public long price;
-    public String accomodationType;
 
     @Identifier
     public String name;

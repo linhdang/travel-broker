@@ -21,7 +21,7 @@ agent AccommodationProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.F
         system.trace(true);
         console.println("Setting up available plans under the providers");
         // create endpoint for registering plans http://localhos:9000/travel-broker/plans
-        PassiveMAMSAgent::!listResource("plans", "mams.AvailablePlan");
+        PassiveMAMSAgent::!listResource("plans", "mams.AccommodationPlan");
 
         // subscribe for any new plans submitted
 
@@ -32,7 +32,7 @@ agent AccommodationProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.F
     }
 
     // add the available service, and trigger negotiation
-    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string provider_name,  "mams.AvailablePlan")) {
+    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string provider_name,  "mams.AccommodationPlan")) {
         // handle Provider registration
         string name = source_artifact_name+"-"+provider_name;
         cartago.lookupArtifact(name, cartago.ArtifactId id);
@@ -49,18 +49,12 @@ agent AccommodationProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.F
        
     }
 
-    rule +!handle_content("plan_request", plan_request_action(string departure, string arrival, string accomodationType, long from, long to, string plannerId )) {
+    rule +!handle_content("plan_request", plan_request_action(string arrival, string departure, long from, long to, string accomodationType, string plannerId )) {
           
-        console.println("new plan request: " + departure + " held by: " + arrival);
-        
         // send proposed plan to based on what they have
 
         foreach(available_accommodation(string available_location, string available_accomodationType, long available_from, long available_to)) {
             if (available_location == arrival & available_accomodationType == accomodationType & available_from == from & available_to == to) {
-                // 
-                console.println("found a plan matched request, send back to planner");
-                //found available_plan
-
                 !request_action(plannerId, accommodation(available_location, available_accomodationType, available_from, available_to));
             }
         }
