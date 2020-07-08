@@ -3,7 +3,6 @@ agent Main extends mams.MAMSAgent {
     module Console console;
 
 	rule +!main(list args) {
-        system.trace(true);
 		MAMSAgent::!setup();
         
         system.createAgent("travel-broker", "mams.TravelBroker");

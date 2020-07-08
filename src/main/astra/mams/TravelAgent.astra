@@ -9,8 +9,10 @@ agent TravelAgent {
         // formula plan_request_action(string, string, string, long, long, string);
 
         formula plan_request_action(string, string);
-        formula flight(string, string, long, long);
-        formula accommodation(string, string, long);
+
+        formula flight(string, string, long);
+        
+        formula accommodation(string, string, long, long);
     }
     
     rule +!init() {

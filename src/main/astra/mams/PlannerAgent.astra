@@ -10,7 +10,7 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
     initial !init();
 
      // initialize channel to send message to, would be a topic per se
-    initial !monitor_action_requests(), !monitor_subscriptions();
+    initial !monitor_action_requests();
 
     rule +!init() {
         MAMSAgent::!init();
@@ -41,7 +41,7 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         console.println("Received a proposal for accommodation");
     }
 
-    rule +!evaluate_request(string name, flight(string departure, string arrival, long from, long to), boolean res) {
+    rule +!evaluate_request(string name, flight(string departure, string arrival, long date), boolean res) {
         res = true;
         console.println("Received a proposal for flight");
     }

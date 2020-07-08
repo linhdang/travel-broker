@@ -8,7 +8,7 @@ agent FlightProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequ
     module Functions F;
 
     initial !init();
-    initial !monitor_action_requests(), !monitor_subscriptions();
+    initial !monitor_action_requests();
     // //http://astralanguage.com/wordpress/multi-agent-communication-with-astra/
     // inference interest(string type) :- itemResource(type, "mams.Plan");
 
@@ -17,10 +17,8 @@ agent FlightProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequ
     }
 
     rule +!init() {
-        // system.trace(true);
         MAMSAgent::!init();
         MAMSAgent::!created("base");
-        system.trace(true);
         console.println("Setting up available plans under the providers");
         // create endpoint for registering plans http://localhos:9000/travel-broker/plans
         PassiveMAMSAgent::!listResource("plans", "mams.FlightPlan");
@@ -55,7 +53,8 @@ agent FlightProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequ
            
         foreach(available_flight(string available_departure, string available_arrival, long date)) {
             if (available_departure == departure & available_arrival == arrival & date == from) {
-                !request_action(plannerId, flight(available_departure, available_arrival, date));
+                !request_action(plannerId, flight(available_departure, available_arrival, from));
+                // !request_action(plannerId, accommodation(available_arrival, accommodationType, from, to));
             }
         }
       
