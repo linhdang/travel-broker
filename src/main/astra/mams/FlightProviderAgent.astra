@@ -57,6 +57,8 @@ agent FlightProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequ
                 // !request_action(plannerId, accommodation(available_arrival, accommodationType, from, to));
             }
         }
+
+        FipaSubscribe::!!subscribe(S.getOwner(), "plan_request");
       
     }
 }

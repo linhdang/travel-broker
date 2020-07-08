@@ -56,6 +56,6 @@ agent AccommodationProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.F
                 !request_action(plannerId, accommodation(available_location, available_accomodationType, available_from, available_to));
             }
         }
-      
+
     }
 }

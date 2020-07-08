@@ -2,7 +2,7 @@ package mams;
 
 // each Planner will be registered via TravelBroker
 // Planner presents a Travel Agency registering with the market place
-agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, astra.protocol.FipaSubscribe, mams.TravelAgent{
+agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, mams.TravelAgent{
     module System system;
     module Console console;
 
@@ -15,7 +15,6 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
     rule +!init() {
         MAMSAgent::!init();
         MAMSAgent::!created("base");
-        system.trace(true);
         console.println("Setting up plans list resource under each planner");
         
         // create endpoint for requesting plan
@@ -35,14 +34,26 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         +artifact(plan_name, name, id);
     }
 
-
-    rule +!evaluate_request(string name, accommodation(string location, string accomodationType, long from, long to), boolean res) {
+    rule +!evaluate_request(string sender, accommodation(string location, string accomodationType, long from, long to), boolean res) {
         res = true;
-        console.println("Received a proposal for accommodation");
     }
 
-    rule +!evaluate_request(string name, flight(string departure, string arrival, long date), boolean res) {
+    rule +!execute_request(string sender, accommodation(string location, string accomodationType, long from, long to), funct outcome, boolean result) {
+        console.println("Received a proposal for accommodation");
+
+        outcome = null_outcome();
+        result = true;
+    }
+   
+
+    rule +!evaluate_request(string sender, flight(string departure, string arrival, long date), boolean res) {
         res = true;
-        console.println("Received a proposal for flight");
+    }
+
+    rule +!execute_request(string sender, flight(string departure, string arrival, long date), funct outcome, boolean result) {
+        console.println("Received a proposal for accommodation");
+
+        outcome = null_outcome();
+        result = true;
     }
 }
