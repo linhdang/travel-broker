@@ -19,7 +19,7 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, ma
         
         // create endpoint for requesting plan
 
-        PassiveMAMSAgent::!listResource("plans", "mams.Plan");
+        PassiveMAMSAgent::!listResource("plans", "mams.CustomerPlan");
     }
 
    // add the request plan, look for provider
@@ -34,7 +34,10 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, ma
         +artifact(plan_name, name, id);
     }
 
+    // evaluate accommodation message
+
     rule +!evaluate_request(string sender, accommodation(string location, string accomodationType, long from, long to), boolean res) {
+        //TODO: if request from sender not in preferred it, we should ignore
         res = true;
     }
 
@@ -45,8 +48,10 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, ma
         result = true;
     }
    
+   // evaluate flight message
 
     rule +!evaluate_request(string sender, flight(string departure, string arrival, long date), boolean res) {
+        //TODO: if request from sender not in preferred it, we should ignore
         res = true;
     }
 

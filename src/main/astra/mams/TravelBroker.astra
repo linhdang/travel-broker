@@ -69,6 +69,7 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
 
         // Record info about the artifact
         +artifact(provider_name, name, id);
+        !itemProperty(provider_name, "name", funct customerName);
         !itemProperty(provider_name, "arrival", funct arrival);
         !itemProperty(provider_name, "departure", funct departure );
         !itemProperty(provider_name, "from", funct from);
@@ -78,16 +79,16 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
 
         // // call post to create plan resource on planner
 
-        // string jsonPlan =  "{\n" +
-        //         "\"from\": "+F.valueAsLong(from, 0)+", \n" +
-        //         "\"to\": "+ F.valueAsLong(to, 0) +", \n" +
-        //         "\"departure\": \""+ F.valueAsString(departure, 0)+"\",\n" +
-        //         "\"arrival\": \""+ F.valueAsString(arrival, 0)+"\",\n" +
-        //         "\"accomodationType\": \""+ F.valueAsString(accomodationType, 0) + "\",\n" +
-        //         "\"name\": \""+provider_name+"\"\n" +
-        //         "}";
-        // MAMSAgent::!post("http://localhost:9000/" + F.valueAsString(plannerId, 0)+"/plans/", jsonPlan, int code, string content);
-        // if (code ~= 200) S.fail();
+        string jsonPlan =  "{\n" +
+                "\"from\": "+F.valueAsLong(from, 0)+", \n" +
+                "\"to\": "+ F.valueAsLong(to, 0) +", \n" +
+                "\"departure\": \""+ F.valueAsString(departure, 0)+"\",\n" +
+                "\"arrival\": \""+ F.valueAsString(arrival, 0)+"\",\n" +
+                "\"accomodationType\": \""+ F.valueAsString(accomodationType, 0) + "\",\n" +
+                "\"name\": \""+F.valueAsString(customerName, 0)+"\"\n" +
+                "}";
+        MAMSAgent::!post("http://localhost:9000/" + F.valueAsString(plannerId, 0)+"/plans/", jsonPlan, int code, string content);
+        if (code ~= 200) S.fail();
 
         // departure, arrival, accomodationType, from, to, plannerId and uri for submitting proposals
         !publish("plan_request", plan_request_action(F.valueAsString(arrival, 0), F.valueAsString(departure, 0),
