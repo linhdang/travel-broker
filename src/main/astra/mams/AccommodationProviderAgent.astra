@@ -47,13 +47,13 @@ agent AccommodationProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.F
        
     }
 
-    rule +!handle_content("plan_request", plan_request_action(string arrival, string departure, long from, long to, string accomodationType, string plannerId )) {
+    rule +!handle_content("plan_request", plan_request_action(string customerName, string arrival, string departure, long from, long to, string accomodationType, string plannerId )) {
           
         // send proposed plan to based on what they have
 
         foreach(available_accommodation(string available_location, string available_accomodationType, long available_from, long available_to)) {
             if (available_location == arrival & available_accomodationType == accomodationType & available_from == from & available_to == to) {
-                !request_action(plannerId, accommodation(available_location, available_accomodationType, available_from, available_to));
+                !request_action(plannerId, accommodation(customerName, available_location, available_accomodationType, available_from, available_to));
             }
         }
 

@@ -23,25 +23,26 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, ma
     }
 
    // add the request plan, look for provider
-    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string plan_name, "mams.Plan")) {
+    rule $cartago.signal(string source_artifact_name, listItemArtifactCreated(string customerId, "mams.CustomerPlan")) {
         // handle Provider registration
-        string name = source_artifact_name+"-"+plan_name;
+        string name = source_artifact_name+"-"+customerId;
         cartago.lookupArtifact(name, cartago.ArtifactId id);
         cartago.focus(id);
+        cartago.operation(id, updateResource("application/json", "{}"));
 
         // Record info about the artifact
         
-        +artifact(plan_name, name, id);
+        +artifact(customerId, name, id);
     }
 
     // evaluate accommodation message
 
-    rule +!evaluate_request(string sender, accommodation(string location, string accomodationType, long from, long to), boolean res) {
+    rule +!evaluate_request(string sender, accommodation(string customerName, string location, string accomodationType, long from, long to), boolean res) {
         //TODO: if request from sender not in preferred it, we should ignore
         res = true;
     }
 
-    rule +!execute_request(string sender, accommodation(string location, string accomodationType, long from, long to), funct outcome, boolean result) {
+    rule +!execute_request(string sender, accommodation(string customerName, string location, string accomodationType, long from, long to), funct outcome, boolean result) {
         console.println("Received a proposal for accommodation");
 
         outcome = null_outcome();
@@ -50,14 +51,36 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, ma
    
    // evaluate flight message
 
-    rule +!evaluate_request(string sender, flight(string departure, string arrival, long date), boolean res) {
+    rule +!evaluate_request(string sender, flight(string customerName, string departure, string arrival, long date), boolean res) {
         //TODO: if request from sender not in preferred it, we should ignore
         res = true;
     }
 
-    rule +!execute_request(string sender, flight(string departure, string arrival, long date), funct outcome, boolean result) {
+    rule +!execute_request(string sender, flight(string customerName, string departure, string arrival, long date), funct outcome, boolean result) {
         console.println("Received a proposal for accommodation");
 
+        outcome = null_outcome();
+        result = true;
+    }
+
+    // collect proposal and publish to <planner>/plans/<customerid>
+
+    rule +!evaluate_request(string sender, collect_proposals(string customerId), boolean res) {
+        //TODO: if request from sender not in preferred it, we should ignore
+        res = true;
+    }
+
+    rule +!execute_request(string sender, collect_proposals(string customerName), funct outcome, boolean result){
+        console.println("Prepare proposal");
+
+        // loop all facts having customerName,
+        // smashing together into json body
+        // put it on via REST
+        // foreach(available_flight(string available_departure, string available_arrival, long date)) {
+        //     if (available_departure == departure & available_arrival == arrival & date == from) {
+        //         !request_action(plannerId, flight(available_departure, available_arrival, from));
+        //     }
+        // }
         outcome = null_outcome();
         result = true;
     }

@@ -77,22 +77,17 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         !itemProperty(provider_name, "accomodationType", funct accomodationType);
         !itemProperty(provider_name, "plannerId", funct plannerId);
 
-        // // call post to create plan resource on planner
-
-        string jsonPlan =  "{\n" +
-                "\"from\": "+F.valueAsLong(from, 0)+", \n" +
-                "\"to\": "+ F.valueAsLong(to, 0) +", \n" +
-                "\"departure\": \""+ F.valueAsString(departure, 0)+"\",\n" +
-                "\"arrival\": \""+ F.valueAsString(arrival, 0)+"\",\n" +
-                "\"accomodationType\": \""+ F.valueAsString(accomodationType, 0) + "\",\n" +
-                "\"name\": \""+F.valueAsString(customerName, 0)+"\"\n" +
-                "}";
-        MAMSAgent::!post("http://localhost:9000/" + F.valueAsString(plannerId, 0)+"/plans/", jsonPlan, int code, string content);
-        if (code ~= 200) S.fail();
-
         // departure, arrival, accomodationType, from, to, plannerId and uri for submitting proposals
-        !publish("plan_request", plan_request_action(F.valueAsString(arrival, 0), F.valueAsString(departure, 0),
+        !publish("plan_request", plan_request_action(F.valueAsString(customerName, 0), F.valueAsString(arrival, 0), F.valueAsString(departure, 0),
          F.valueAsLong(from, 0), F.valueAsLong(to, 0), F.valueAsString(accomodationType, 0), F.valueAsString(plannerId, 0)));
+        // COMMENT: mams-astra should provide way to call @LINK function in the Java POJO, so that the resource can be updated internally
+        // catargo operation is transactional and should be utilize the POJO operation to deal with transactional logic
+        
+        // give 1s for all agents propose their plan and price
+        system.sleep(1000);
+        // planner agent collects all proposals and create the customer plan resources
+        !request_action(plannerId, collect_proposals(F.valueAsString(customerName, 0)));
+
     }
 
 }

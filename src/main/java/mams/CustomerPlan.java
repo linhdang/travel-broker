@@ -3,6 +3,7 @@ package mams;
 import java.util.HashMap;
 import java.util.Map;
 
+import cartago.LINK;
 import cartago.OPERATION;
 import mams.utils.Identifier;
 public class CustomerPlan {
@@ -16,12 +17,12 @@ public class CustomerPlan {
     public Map<String, Long> proposedFlights = new HashMap<String,Long>(); 
     public Map<String, Long> proposedAccomodation = new HashMap<String,Long>(); 
     
-    @OPERATION
+    @LINK
     public void putProposedFlight(String provider, Long price) {
         proposedFlights.put(provider, price);
     }
 
-    @OPERATION
+    @LINK
     public void putProposedAccomodation(String provider, Long price) {
         proposedFlights.put(provider, price);
     }

@@ -48,17 +48,14 @@ agent FlightProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequ
        
     }
 
-    rule +!handle_content("plan_request", plan_request_action(string arrival, string departure, long from, long to, string accommodationType, string plannerId )) {
+    rule +!handle_content("plan_request", plan_request_action(string customerName, string arrival, string departure, long from, long to, string accommodationType, string plannerId )) {
         // send proposed plan to based on what they have
            
         foreach(available_flight(string available_departure, string available_arrival, long date)) {
             if (available_departure == departure & available_arrival == arrival & date == from) {
-                !request_action(plannerId, flight(available_departure, available_arrival, from));
-                // !request_action(plannerId, accommodation(available_arrival, accommodationType, from, to));
+                !request_action(plannerId, flight(customerName, available_departure, available_arrival, from));
             }
         }
-
-        FipaSubscribe::!!subscribe(S.getOwner(), "plan_request");
       
     }
 }

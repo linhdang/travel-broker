@@ -6,13 +6,13 @@ agent TravelAgent {
     
     types plan_request {
 
-        // formula plan_request_action(string, string, string, long, long, string);
+        formula plan_request_action(string, string, string, string, long, long, string);
 
-        formula plan_request_action(string, string);
-
-        formula flight(string, string, long);
+        formula flight(string, string, string, long);
         
-        formula accommodation(string, string, long, long);
+        formula accommodation(string, string, string, long, long);
+
+        formula collect_proposals(string, string);
     }
     
     rule +!init() {
