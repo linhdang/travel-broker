@@ -11,7 +11,7 @@ agent AccommodationProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.F
     initial !monitor_action_requests();
 
     types eg {
-        formula available_accommodation(string, string, long, long);
+        formula available_accommodation(string, string, long, long, long);
     }
 
     rule +!init() {
@@ -42,8 +42,9 @@ agent AccommodationProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.F
         !itemProperty(provider_name, "accommodationType", funct accommodationType );
         !itemProperty(provider_name, "from", funct from);
         !itemProperty(provider_name, "to", funct to);
+        !itemProperty(provider_name, "price", funct price);
         // record belief on available plan
-        +available_accommodation(F.valueAsString(arrival, 0), F.valueAsString(accommodationType, 0), F.valueAsLong(from, 0), F.valueAsLong(to, 0));
+        +available_accommodation(F.valueAsString(arrival, 0), F.valueAsString(accommodationType, 0), F.valueAsLong(from, 0), F.valueAsLong(to, 0),F.valueAsLong(price, 0));
        
     }
 
@@ -51,9 +52,9 @@ agent AccommodationProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.F
           
         // send proposed plan to based on what they have
 
-        foreach(available_accommodation(string available_location, string available_accomodationType, long available_from, long available_to)) {
+        foreach(available_accommodation(string available_location, string available_accomodationType, long available_from, long available_to, long price)) {
             if (available_location == arrival & available_accomodationType == accomodationType & available_from == from & available_to == to) {
-                !request_action(plannerId, accommodation(customerName, available_location, available_accomodationType, available_from, available_to));
+                !request_action(plannerId, accommodation(customerName, available_location, available_accomodationType, available_from, available_to, price));
             }
         }
 

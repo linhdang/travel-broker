@@ -5,12 +5,23 @@ package mams;
 agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, mams.TravelAgent{
     module System system;
     module Console console;
-
+    module Functions F;
     
     initial !init();
 
      // initialize channel to send message to, would be a topic per se
     initial !monitor_action_requests();
+
+    types plan {
+        //accommodation( sender, customerName, location, accomodationType, from, to, price )
+
+        formula accommodation( string, string, string, string, long, long, long );
+
+        //sender, customerName, departure, arrival, date, price
+
+        formula flight(string, string, string, string, long, long);
+        
+    }
 
     rule +!init() {
         MAMSAgent::!init();
@@ -37,28 +48,28 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, ma
 
     // evaluate accommodation message
 
-    rule +!evaluate_request(string sender, accommodation(string customerName, string location, string accomodationType, long from, long to), boolean res) {
+    rule +!evaluate_request(string sender, accommodation(string customerName, string location, string accomodationType, long from, long to, long price), boolean res) {
         //TODO: if request from sender not in preferred it, we should ignore
         res = true;
     }
 
-    rule +!execute_request(string sender, accommodation(string customerName, string location, string accomodationType, long from, long to), funct outcome, boolean result) {
+    rule +!execute_request(string sender, accommodation(string customerName, string location, string accomodationType, long from, long to, long price), funct outcome, boolean result) {
         console.println("Received a proposal for accommodation");
-
+        +accommodation(sender, customerName,location,accomodationType,from,to, price);
         outcome = null_outcome();
         result = true;
     }
    
    // evaluate flight message
 
-    rule +!evaluate_request(string sender, flight(string customerName, string departure, string arrival, long date), boolean res) {
+    rule +!evaluate_request(string sender, flight(string customerName, string departure, string arrival, long date, long price), boolean res) {
         //TODO: if request from sender not in preferred it, we should ignore
         res = true;
     }
 
-    rule +!execute_request(string sender, flight(string customerName, string departure, string arrival, long date), funct outcome, boolean result) {
+    rule +!execute_request(string sender, flight(string customerName, string departure, string arrival, long date, long price), funct outcome, boolean result) {
         console.println("Received a proposal for accommodation");
-
+        +flight(sender, customerName, departure, arrival, date, price);
         outcome = null_outcome();
         result = true;
     }
@@ -81,6 +92,43 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, ma
         //         !request_action(plannerId, flight(available_departure, available_arrival, from));
         //     }
         // }
+
+        long from;
+        long to;
+        string departure = "";
+        string arrival = "";
+        string accommodations = "";
+        foreach(accommodation(string provider, string requestedCustomerName, string location, string accomodationType, long requestedFrom, long requestedTo, long price)) {
+            if (customerName == requestedCustomerName) {
+                from = requestedFrom;
+                to = requestedTo;
+                accommodations = accommodations + "{ \"provider\":" + "\"" + provider + "\", \"price\": "+price+",\"accomodationType\": \""+accomodationType+"\"}";
+                -accommodation(sender, customerName,location,accomodationType,from,to, price);
+            }
+        }
+        
+        string flights = "";
+        foreach(flight(string provider, string requestedCustomerName, string requestedDeparture, string requestedArrival, long date, long price)) {
+             if (customerName == requestedCustomerName) {
+                departure = requestedDeparture;
+                arrival = requestedArrival;
+                flights = flights + "{ \"provider\":" + "\"" + provider + "\", \"price\": "+price+"}";
+                -flight(provider, requestedCustomerName, requestedDeparture, requestedArrival, date, price);
+            }
+        }
+        string jsonPlan =  "{\n" +
+                "\"from\": "+ from +", \n" +
+                "\"to\": "+ to +", \n" +
+                "\"departure\": \""+  departure +"\",\n" +
+                "\"arrival\": \""+ arrival +"\",\n" +
+                "\"proposedAccomodations\": ["+ accommodations + "],\n" +
+                "\"proposedFlights\": ["+ flights + "],\n" +
+                "\"name\": \""+customerName+"\"\n" +
+                "}";
+        
+        MAMSAgent::!post("http://localhost:9000/" + system.name() +"/plans/", jsonPlan, int code, string content);
+        if (code ~= 200) S.fail();
+
         outcome = null_outcome();
         result = true;
     }

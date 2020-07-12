@@ -13,7 +13,7 @@ agent FlightProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequ
     // inference interest(string type) :- itemResource(type, "mams.Plan");
 
     types eg {
-        formula available_flight(string, string, long);
+        formula available_flight(string, string, long, long);
     }
 
     rule +!init() {
@@ -43,17 +43,18 @@ agent FlightProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequ
         !itemProperty(provider_name, "arrival", funct arrival);
         !itemProperty(provider_name, "departure", funct departure);
         !itemProperty(provider_name, "from", funct date);
+        !itemProperty(provider_name, "price", funct price);
         // record belief on available plan
-        +available_flight(F.valueAsString(departure, 0), F.valueAsString(arrival, 0), F.valueAsLong(date, 0));
+        +available_flight(F.valueAsString(departure, 0), F.valueAsString(arrival, 0), F.valueAsLong(date, 0), F.valueAsLong(price, 0) );
        
     }
 
     rule +!handle_content("plan_request", plan_request_action(string customerName, string arrival, string departure, long from, long to, string accommodationType, string plannerId )) {
         // send proposed plan to based on what they have
            
-        foreach(available_flight(string available_departure, string available_arrival, long date)) {
+        foreach(available_flight(string available_departure, string available_arrival, long date, long price)) {
             if (available_departure == departure & available_arrival == arrival & date == from) {
-                !request_action(plannerId, flight(customerName, available_departure, available_arrival, from));
+                !request_action(plannerId, flight(customerName, available_departure, available_arrival, from, price));
             }
         }
       

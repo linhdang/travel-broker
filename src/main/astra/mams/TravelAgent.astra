@@ -8,9 +8,9 @@ agent TravelAgent {
 
         formula plan_request_action(string, string, string, string, long, long, string);
 
-        formula flight(string, string, string, long);
+        formula flight(string, string, string, long, long);
         
-        formula accommodation(string, string, string, long, long);
+        formula accommodation(string, string, string, long, long, long);
 
         formula collect_proposals(string, string);
     }

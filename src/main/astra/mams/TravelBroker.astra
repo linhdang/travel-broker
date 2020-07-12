@@ -86,7 +86,7 @@ agent TravelBroker extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, as
         // give 1s for all agents propose their plan and price
         system.sleep(1000);
         // planner agent collects all proposals and create the customer plan resources
-        !request_action(plannerId, collect_proposals(F.valueAsString(customerName, 0)));
+        !request_action(F.valueAsString(plannerId, 0), collect_proposals(F.valueAsString(customerName, 0)));
 
     }
 
