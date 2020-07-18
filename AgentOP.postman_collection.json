@@ -184,7 +184,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"from\": 123123, \n\"to\": 1231233213, \n\"departure\": \"Dublin\",\n\"arrival\": \"London\",\n\"accomodationType\": \"ONE_BED\",\n\"name\": \"Customer-3\",\n\"plannerId\": \"Travel_A\"\n}",
+					"raw": "{\n\"from\": 123, \n\"to\": 124, \n\"departure\": \"Dublin\",\n\"arrival\": \"London\",\n\"accomodationType\": \"ONE_BED\",\n\"name\": \"Customer-1\",\n\"plannerId\": \"Travel_A\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
