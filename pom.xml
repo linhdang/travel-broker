@@ -6,7 +6,7 @@
 
     <groupId>ucd</groupId>
     <artifactId>travel-broker</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
 
     <parent>
@@ -15,6 +15,10 @@
         <version>2.4.0</version>
     </parent>
     
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
     <repositories>
 		<repository>
@@ -43,10 +47,6 @@
             <version>0.1.0</version>
         </dependency>
     </dependencies>
-
-    <properties>
-        <astra.main>Main</astra.main>
-    </properties>
 
     <build>
         <defaultGoal>clean compile astra:deploy</defaultGoal>
@@ -77,7 +77,28 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>            
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.13</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <repository>registry.hub.docker.com/linhdanghong/mams-travel-broker</repository>
+                    <tag>${project.version}</tag>
+                    <buildArgs>
+                        <JAR_FILE>target/${project.build.finalName}-jar-with-dependencies.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
