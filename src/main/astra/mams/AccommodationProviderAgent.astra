@@ -9,7 +9,7 @@ agent AccommodationProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.F
 
     initial !init();
     initial !monitor_action_requests();
-
+    
     types eg {
         formula available_accommodation(string, string, long, long, long);
     }
@@ -17,6 +17,7 @@ agent AccommodationProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.F
     rule +!init() {
         MAMSAgent::!init();
         MAMSAgent::!created("base");
+        system.trace(true);
         console.println("Setting up available plans under the providers");
         // create endpoint for registering plans http://localhos:9000/travel-broker/plans
         PassiveMAMSAgent::!listResource("plans", "mams.AccommodationPlan");
@@ -53,7 +54,7 @@ agent AccommodationProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.F
         // send proposed plan to based on what they have
 
         foreach(available_accommodation(string available_location, string available_accomodationType, long available_from, long available_to, long price)) {
-            if (available_location == arrival & available_accomodationType == accomodationType & available_from == from & available_to == to) {
+            if (available_location == arrival & available_accomodationType == accomodationType & available_from == from) {
                 !request_action(plannerId, accommodation(customerName, available_location, available_accomodationType, available_from, available_to, price));
             }
         }

@@ -53,8 +53,14 @@ agent FlightProviderAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequ
         // send proposed plan to based on what they have
            
         foreach(available_flight(string available_departure, string available_arrival, long date, long price)) {
+            // departure flight
             if (available_departure == departure & available_arrival == arrival & date == from) {
                 !request_action(plannerId, flight(customerName, available_departure, available_arrival, from, price));
+            }
+
+            // return flight
+            if (available_departure == arrival & available_arrival == departure & date == to) {
+                !request_action(plannerId, flight(customerName, available_arrival, available_departure, to, price));
             }
         }
       

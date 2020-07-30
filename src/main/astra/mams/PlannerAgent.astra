@@ -68,7 +68,7 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, ma
     }
 
     rule +!execute_request(string sender, flight(string customerName, string departure, string arrival, long date, long price), funct outcome, boolean result) {
-        console.println("Received a proposal for accommodation");
+        console.println("Received a proposal for flight");
         +flight(sender, customerName, departure, arrival, date, price);
         outcome = null_outcome();
         result = true;
@@ -93,42 +93,43 @@ agent PlannerAgent extends mams.PassiveMAMSAgent, astra.protocol.FipaRequest, ma
         //     }
         // }
 
-        long from;
-        long to;
+        long from = 0l;
+        long to = 0l;
         string departure = "";
         string arrival = "";
         string accommodations = "";
+        
         foreach(accommodation(string provider, string requestedCustomerName, string location, string accomodationType, long requestedFrom, long requestedTo, long price)) {
             if (customerName == requestedCustomerName) {
                 from = requestedFrom;
-                to = requestedTo;
                 accommodations = accommodations + "{ \"provider\":" + "\"" + provider + "\", \"price\": "+price+",\"accomodationType\": \""+accomodationType+"\"}";
                 -accommodation(sender, customerName,location,accomodationType,from,to, price);
             }
         }
-        
         string flights = "";
         foreach(flight(string provider, string requestedCustomerName, string requestedDeparture, string requestedArrival, long date, long price)) {
              if (customerName == requestedCustomerName) {
                 departure = requestedDeparture;
                 arrival = requestedArrival;
-                flights = flights + "{ \"provider\":" + "\"" + provider + "\", \"price\": "+price+"}";
+                flights = flights + "{ \"provider\":" + "\"" + provider + "\", \"price\": "+price+", \"date\":" + date + "}";
                 -flight(provider, requestedCustomerName, requestedDeparture, requestedArrival, date, price);
             }
         }
-        string jsonPlan =  "{\n" +
-                "\"from\": "+ from +", \n" +
-                "\"to\": "+ to +", \n" +
-                "\"departure\": \""+  departure +"\",\n" +
-                "\"arrival\": \""+ arrival +"\",\n" +
-                "\"proposedAccomodations\": ["+ accommodations + "],\n" +
-                "\"proposedFlights\": ["+ flights + "],\n" +
-                "\"name\": \""+customerName+"\"\n" +
-                "}";
-        
-        MAMSAgent::!post("http://localhost:9000/" + system.name() +"/plans/", jsonPlan, int code, string content);
-        if (code ~= 200) S.fail();
-
+        console.println("Prepare proposal for " + flights);
+        if (from > 0) {
+            string jsonPlan =  "{\n" +
+                    "\"from\": "+ from +", \n" +
+                    "\"to\": "+ to +", \n" +
+                    "\"departure\": \""+  departure +"\",\n" +
+                    "\"arrival\": \""+ arrival +"\",\n" +
+                    "\"proposedAccomodations\": ["+ accommodations + "],\n" +
+                    "\"proposedFlights\": ["+ flights + "],\n" +
+                    "\"name\": \""+customerName+"\"\n" +
+                    "}";
+            console.println("Submit " + jsonPlan);
+            MAMSAgent::!post("http://localhost:9000/" + system.name() +"/plans/", jsonPlan, int code, string content);
+            if (code ~= 200) S.fail();
+        }
         outcome = null_outcome();
         result = true;
     }
